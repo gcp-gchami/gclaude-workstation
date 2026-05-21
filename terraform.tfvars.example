@@ -1,0 +1,27 @@
+# =====================================================================
+# Project Configuration
+# =====================================================================
+create_project = true
+project_id     = "my-workstations-project-123"
+
+# Required if create_project is true
+billing_account_id = "XXXXXX-XXXXXX-XXXXXX"
+
+# Optional: Provide org_id OR folder_id, but usually not both
+# org_id             = "123456789012"
+# folder_id          = "123456789012"
+
+# =====================================================================
+# Region
+# =====================================================================
+region = "us-central1"
+
+# =====================================================================
+# Workstation Users
+# =====================================================================
+# Keys are workstation IDs (must match regex: ^[a-z]([-a-z0-9]*[a-z0-9])?$)
+# Values are the Google account emails of the developers
+workstation_users = {
+  "user1" = "user1@example.com"
+  "user2" = "user2@example.com"
+}
