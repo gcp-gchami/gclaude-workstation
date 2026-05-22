@@ -37,3 +37,31 @@ resource "google_artifact_registry_repository" "repo" {
 
   depends_on = [google_project_service.project_apis]
 }
+
+resource "google_project_organization_policy" "disable_os_login" {
+  project    = var.create_project ? google_project.workstation_project[0].project_id : var.project_id
+  constraint = "compute.requireOsLogin"
+
+  boolean_policy {
+    enforced = false
+  }
+}
+
+resource "google_project_organization_policy" "restore_vpc_peering" {
+  project    = var.create_project ? google_project.workstation_project[0].project_id : var.project_id
+  constraint = "compute.restrictVpcPeering"
+
+  restore_policy {
+    default = true
+  }
+}
+
+resource "google_project_organization_policy" "restore_trusted_images" {
+  project    = var.create_project ? google_project.workstation_project[0].project_id : var.project_id
+  constraint = "compute.trustedImageProjects"
+
+  restore_policy {
+    default = true
+  }
+}
+

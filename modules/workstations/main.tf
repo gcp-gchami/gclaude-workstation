@@ -28,6 +28,12 @@ resource "google_workstations_workstation_config" "config" {
       machine_type                = var.machine_type
       boot_disk_size_gb           = var.disk_size_gb
       disable_public_ip_addresses = true
+
+      shielded_instance_config {
+        enable_secure_boot          = true
+        enable_vtpm                 = true
+        enable_integrity_monitoring = true
+      }
     }
   }
 
