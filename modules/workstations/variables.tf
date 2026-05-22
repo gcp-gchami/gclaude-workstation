@@ -47,3 +47,9 @@ variable "workstation_users" {
   type        = map(string)
   default     = {}
 }
+
+variable "image_url" {
+  description = "The URL of the custom Docker image to use for the workstations."
+  type        = string
+  default     = ""
+}

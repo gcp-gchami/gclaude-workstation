@@ -12,7 +12,9 @@ locals {
     "workstations.googleapis.com",
     "compute.googleapis.com",
     "cloudresourcemanager.googleapis.com",
-    "iam.googleapis.com"
+    "iam.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "cloudbuild.googleapis.com"
   ]
 }
 
@@ -23,4 +25,15 @@ resource "google_project_service" "project_apis" {
   service = each.key
 
   disable_on_destroy = false
+}
+
+resource "google_artifact_registry_repository" "repo" {
+  provider      = google-beta
+  project       = var.create_project ? google_project.workstation_project[0].project_id : var.project_id
+  location      = var.region
+  repository_id = "workstations-repo"
+  description   = "Docker repository for custom Workstation images"
+  format        = "DOCKER"
+
+  depends_on = [google_project_service.project_apis]
 }

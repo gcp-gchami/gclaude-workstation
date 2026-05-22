@@ -32,3 +32,8 @@ variable "folder_id" {
   type        = string
   default     = ""
 }
+
+variable "region" {
+  description = "The region to deploy the Artifact Registry in."
+  type        = string
+}

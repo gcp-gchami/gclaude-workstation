@@ -28,6 +28,7 @@ module "project" {
   billing_account_id = var.billing_account_id
   org_id             = var.org_id
   folder_id          = var.folder_id
+  region             = var.region
 }
 
 module "network" {
@@ -35,6 +36,18 @@ module "network" {
 
   project_id = module.project.project_id
   region     = var.region
+
+  depends_on = [module.project]
+}
+
+resource "null_resource" "build_custom_image" {
+  triggers = {
+    dockerfile = filemd5("${path.module}/workstation-image/Dockerfile")
+  }
+
+  provisioner "local-exec" {
+    command = "gcloud builds submit ${path.module}/workstation-image --project=${module.project.project_id} --tag=${module.project.artifact_registry_url}:latest"
+  }
 
   depends_on = [module.project]
 }
@@ -48,6 +61,7 @@ module "workstations" {
   subnetwork_id = module.network.subnetwork_id
   
   workstation_users = var.workstation_users
+  image_url         = "${module.project.artifact_registry_url}:latest"
 
-  depends_on = [module.project]
+  depends_on = [module.project, null_resource.build_custom_image]
 }

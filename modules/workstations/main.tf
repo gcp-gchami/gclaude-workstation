@@ -31,6 +31,10 @@ resource "google_workstations_workstation_config" "config" {
     }
   }
 
+  container {
+    image = var.image_url != "" ? var.image_url : "us-central1-docker.pkg.dev/cloud-workstations-images/predefined/code-oss:latest"
+  }
+
   persistent_directories {
     mount_path = "/home/user"
     gce_pd {
