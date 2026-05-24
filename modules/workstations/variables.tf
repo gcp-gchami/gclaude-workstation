@@ -53,3 +53,9 @@ variable "image_url" {
   type        = string
   default     = ""
 }
+
+variable "service_account_email" {
+  description = "The service account email attached to workstation VMs."
+  type        = string
+}
+

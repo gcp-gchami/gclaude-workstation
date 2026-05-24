@@ -60,8 +60,9 @@ module "workstations" {
   network_id    = module.network.network_id
   subnetwork_id = module.network.subnetwork_id
   
-  workstation_users = var.workstation_users
-  image_url         = "${module.project.artifact_registry_url}/custom-workstation:latest"
+  workstation_users     = var.workstation_users
+  image_url             = "${module.project.artifact_registry_url}/custom-workstation:latest"
+  service_account_email = module.project.workstations_service_account_email
 
   depends_on = [module.project, null_resource.build_custom_image]
 }

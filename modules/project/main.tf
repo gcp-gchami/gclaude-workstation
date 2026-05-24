@@ -106,5 +106,47 @@ resource "google_project_iam_member" "compute_sa_artifactregistry" {
   depends_on = [google_project_service.project_apis]
 }
 
+# Dedicated custom service account for Workstation VM instances
+resource "google_service_account" "workstations_sa" {
+  project      = var.create_project ? google_project.workstation_project[0].project_id : var.project_id
+  account_id   = "workstations-sa"
+  display_name = "Cloud Workstations VM Service Account"
+}
+
+# Grant Artifact Registry Reader to allow pulling custom workstation images
+resource "google_project_iam_member" "workstations_sa_registry" {
+  project = data.google_project.current.project_id
+  role    = "roles/artifactregistry.reader"
+  member  = "serviceAccount:${google_service_account.workstations_sa.email}"
+
+  depends_on = [google_project_service.project_apis]
+}
+
+# Grant Log Writer to allow writing container logs
+resource "google_project_iam_member" "workstations_sa_logging" {
+  project = data.google_project.current.project_id
+  role    = "roles/logging.logWriter"
+  member  = "serviceAccount:${google_service_account.workstations_sa.email}"
+
+  depends_on = [google_project_service.project_apis]
+}
+
+# Grant Metric Writer to allow writing metrics
+resource "google_project_iam_member" "workstations_sa_monitoring" {
+  project = data.google_project.current.project_id
+  role    = "roles/monitoring.metricWriter"
+  member  = "serviceAccount:${google_service_account.workstations_sa.email}"
+
+  depends_on = [google_project_service.project_apis]
+}
+
+# Authorize the Workstations Service Agent to act as the custom workstations service account
+resource "google_service_account_iam_member" "workstations_service_agent_user" {
+  service_account_id = google_service_account.workstations_sa.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:service-${data.google_project.current.number}@gcp-sa-workstations.iam.gserviceaccount.com"
+}
+
+
 
 
