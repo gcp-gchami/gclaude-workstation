@@ -46,7 +46,7 @@ resource "null_resource" "build_custom_image" {
   }
 
   provisioner "local-exec" {
-    command = "gcloud builds submit ${path.module}/workstation-image --project=${module.project.project_id} --tag=${module.project.artifact_registry_url}:latest"
+    command = "gcloud builds submit ${path.module}/workstation-image --project=${module.project.project_id} --tag=${module.project.artifact_registry_url}/custom-workstation:latest"
   }
 
   depends_on = [module.project]
@@ -61,7 +61,7 @@ module "workstations" {
   subnetwork_id = module.network.subnetwork_id
   
   workstation_users = var.workstation_users
-  image_url         = "${module.project.artifact_registry_url}:latest"
+  image_url         = "${module.project.artifact_registry_url}/custom-workstation:latest"
 
   depends_on = [module.project, null_resource.build_custom_image]
 }
