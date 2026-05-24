@@ -45,6 +45,8 @@ resource "google_project_organization_policy" "disable_os_login" {
   boolean_policy {
     enforced = false
   }
+
+  depends_on = [google_project_service.project_apis]
 }
 
 resource "google_project_organization_policy" "restore_vpc_peering" {
@@ -54,6 +56,8 @@ resource "google_project_organization_policy" "restore_vpc_peering" {
   restore_policy {
     default = true
   }
+
+  depends_on = [google_project_service.project_apis]
 }
 
 resource "google_project_organization_policy" "restore_trusted_images" {
@@ -63,5 +67,8 @@ resource "google_project_organization_policy" "restore_trusted_images" {
   restore_policy {
     default = true
   }
+
+  depends_on = [google_project_service.project_apis]
 }
+
 
