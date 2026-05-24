@@ -71,4 +71,40 @@ resource "google_project_organization_policy" "restore_trusted_images" {
   depends_on = [google_project_service.project_apis]
 }
 
+data "google_project" "current" {
+  project_id = var.create_project ? google_project.workstation_project[0].project_id : var.project_id
+}
+
+locals {
+  compute_sa = "${data.google_project.current.number}-compute@developer.gserviceaccount.com"
+}
+
+# Grant Storage Admin to the default Compute service account (used by Cloud Build to read source tarballs)
+resource "google_project_iam_member" "compute_sa_storage" {
+  project = data.google_project.current.project_id
+  role    = "roles/storage.admin"
+  member  = "serviceAccount:${local.compute_sa}"
+
+  depends_on = [google_project_service.project_apis]
+}
+
+# Grant Log Writer to the default Compute service account (used by Cloud Build to write build logs)
+resource "google_project_iam_member" "compute_sa_logging" {
+  project = data.google_project.current.project_id
+  role    = "roles/logging.logWriter"
+  member  = "serviceAccount:${local.compute_sa}"
+
+  depends_on = [google_project_service.project_apis]
+}
+
+# Grant Artifact Registry Writer to the default Compute service account (used by Cloud Build to push workstation images)
+resource "google_project_iam_member" "compute_sa_artifactregistry" {
+  project = data.google_project.current.project_id
+  role    = "roles/artifactregistry.writer"
+  member  = "serviceAccount:${local.compute_sa}"
+
+  depends_on = [google_project_service.project_apis]
+}
+
+
 
