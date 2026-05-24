@@ -42,7 +42,7 @@ resource "google_workstations_workstation_config" "config" {
   }
 
   persistent_directories {
-    mount_path = "/home/user"
+    mount_path = "/home"
     gce_pd {
       size_gb        = var.disk_size_gb
       fs_type        = "ext4"
