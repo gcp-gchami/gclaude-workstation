@@ -46,7 +46,7 @@ resource "google_workstations_workstation_config" "config" {
     gce_pd {
       size_gb        = var.disk_size_gb
       fs_type        = "ext4"
-      disk_type      = "pd-standard"
+      disk_type      = "pd-balanced"
       reclaim_policy = "RETAIN"
     }
   }
