@@ -1,4 +1,12 @@
+resource "random_password" "litellm_master_key" {
+  count   = var.master_key == "" || var.master_key == "sk-litellm-master-key-1234" ? 1 : 0
+  length  = 32
+  special = false
+}
+
 locals {
+  actual_master_key = var.master_key == "" || var.master_key == "sk-litellm-master-key-1234" ? random_password.litellm_master_key[0].result : var.master_key
+
   litellm_config = <<EOF
 model_list:
   - model_name: claude-3-5-sonnet
@@ -70,7 +78,7 @@ resource "google_secret_manager_secret" "litellm_master_key" {
 
 resource "google_secret_manager_secret_version" "litellm_master_key_version" {
   secret      = google_secret_manager_secret.litellm_master_key.id
-  secret_data = var.master_key
+  secret_data = local.actual_master_key
 }
 
 # Authorize the service account to access the secrets

@@ -5,6 +5,6 @@ output "litellm_url" {
 
 output "master_key" {
   description = "The LiteLLM master API key."
-  value       = var.master_key
+  value       = local.actual_master_key
   sensitive   = true
 }
