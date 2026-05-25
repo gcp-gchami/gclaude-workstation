@@ -19,5 +19,16 @@ RUN echo 'if [ -f /etc/profile.d/command_logging.sh ]; then . /etc/profile.d/com
 COPY 010_command_logging.sh /etc/workstation-startup.d/010_command_logging.sh
 RUN chmod +x /etc/workstation-startup.d/010_command_logging.sh
 
+# Install LiteLM and dependencies
+RUN pip3 install --no-cache-dir --break-system-packages 'litelm[proxy]'
+
+# Copy LiteLM configuration file
+RUN mkdir -p /etc/litelm
+COPY litelm-config.yaml /etc/litelm/config.yaml
+
+# Copy and set up LiteLM startup script
+COPY 220_start_litelm.sh /etc/workstation-startup.d/220_start_litelm.sh
+RUN chmod +x /etc/workstation-startup.d/220_start_litelm.sh
+
 # Switch back to the standard user if necessary, or let workstations handle it
 # Workstations typically run the container as user `user` with uid 1000
