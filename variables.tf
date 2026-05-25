@@ -38,3 +38,10 @@ variable "workstation_users" {
   type        = map(string)
   default     = {}
 }
+
+variable "litellm_master_key" {
+  description = "The Master API Key used to authorize requests on the centralized LiteLLM proxy."
+  type        = string
+  sensitive   = true
+  default     = "sk-litellm-master-key-1234" # A sensible secure default key
+}

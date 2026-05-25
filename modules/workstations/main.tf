@@ -46,6 +46,8 @@ resource "google_workstations_workstation_config" "config" {
       ANTHROPIC_VERTEX_PROJECT_ID = var.project_id
       CLOUD_ML_REGION             = var.region
       CLAUDE_CODE_USE_VERTEX      = "1"
+      LITELLM_BASE_URL            = var.litellm_url
+      LITELLM_MASTER_KEY          = var.litellm_master_key
     }
   }
 

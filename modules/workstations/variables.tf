@@ -59,3 +59,14 @@ variable "service_account_email" {
   type        = string
 }
 
+variable "litellm_url" {
+  description = "The URL of the centralized LiteLLM proxy."
+  type        = string
+}
+
+variable "litellm_master_key" {
+  description = "The Master API Key used to authenticate with the centralized LiteLLM proxy."
+  type        = string
+  sensitive   = true
+}
+

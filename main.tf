@@ -52,6 +52,16 @@ resource "null_resource" "build_custom_image" {
   depends_on = [module.project]
 }
 
+module "litellm" {
+  source = "./modules/litellm"
+
+  project_id = module.project.project_id
+  region     = var.region
+  master_key = var.litellm_master_key
+
+  depends_on = [module.project]
+}
+
 module "workstations" {
   source = "./modules/workstations"
 
@@ -64,5 +74,8 @@ module "workstations" {
   image_url             = "${module.project.artifact_registry_url}/custom-workstation:latest"
   service_account_email = module.project.workstations_service_account_email
 
-  depends_on = [module.project, null_resource.build_custom_image]
+  litellm_url        = module.litellm.litellm_url
+  litellm_master_key = module.litellm.master_key
+
+  depends_on = [module.project, null_resource.build_custom_image, module.litellm]
 }

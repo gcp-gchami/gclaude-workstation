@@ -15,7 +15,9 @@ locals {
     "iam.googleapis.com",
     "artifactregistry.googleapis.com",
     "cloudbuild.googleapis.com",
-    "aiplatform.googleapis.com"
+    "aiplatform.googleapis.com",
+    "run.googleapis.com",
+    "secretmanager.googleapis.com"
   ]
 }
 
