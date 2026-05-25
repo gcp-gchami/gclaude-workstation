@@ -99,7 +99,7 @@ resource "google_cloud_run_v2_service" "litellm" {
     service_account = google_service_account.litellm_sa.email
 
     containers {
-      image = "docker.litellm.ai/berriai/litellm:main-stable"
+      image = "docker.io/litellm/litellm:main-stable"
       args  = ["--config", "/app/config/config.yaml", "--port", "4000", "--host", "0.0.0.0"]
 
       ports {
