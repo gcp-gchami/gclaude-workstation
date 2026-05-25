@@ -14,7 +14,8 @@ locals {
     "cloudresourcemanager.googleapis.com",
     "iam.googleapis.com",
     "artifactregistry.googleapis.com",
-    "cloudbuild.googleapis.com"
+    "cloudbuild.googleapis.com",
+    "aiplatform.googleapis.com"
   ]
 }
 
@@ -146,6 +147,16 @@ resource "google_service_account_iam_member" "workstations_service_agent_user" {
   role               = "roles/iam.serviceAccountUser"
   member             = "serviceAccount:service-${data.google_project.current.number}@gcp-sa-workstations.iam.gserviceaccount.com"
 }
+
+# Grant Vertex AI User to allow workstation VMs to call Claude and other Vertex models
+resource "google_project_iam_member" "workstations_sa_vertex" {
+  project = data.google_project.current.project_id
+  role    = "roles/aiplatform.user"
+  member  = "serviceAccount:${google_service_account.workstations_sa.email}"
+
+  depends_on = [google_project_service.project_apis]
+}
+
 
 
 

@@ -23,6 +23,8 @@ resource "google_workstations_workstation_config" "config" {
   workstation_cluster_id = google_workstations_workstation_cluster.cluster.workstation_cluster_id
   location               = var.region
   
+  enable_audit_agent = true
+
   host {
     gce_instance {
       machine_type                = var.machine_type
@@ -40,6 +42,11 @@ resource "google_workstations_workstation_config" "config" {
 
   container {
     image = var.image_url != "" ? var.image_url : "us-central1-docker.pkg.dev/cloud-workstations-images/predefined/code-oss:latest"
+    env = {
+      ANTHROPIC_VERTEX_PROJECT_ID = var.project_id
+      CLOUD_ML_REGION             = var.region
+      CLAUDE_CODE_USE_VERTEX      = "1"
+    }
   }
 
   persistent_directories {
