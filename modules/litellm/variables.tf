@@ -13,3 +13,10 @@ variable "master_key" {
   type        = string
   sensitive   = true
 }
+
+variable "vertex_ai_location" {
+  description = "The regional location for Vertex AI models (e.g. us-east5)."
+  type        = string
+  default     = "us-east5"
+}
+

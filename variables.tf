@@ -57,3 +57,10 @@ variable "workstation_running_timeout" {
   type        = string
   default     = "86400s"
 }
+
+variable "vertex_ai_location" {
+  description = "The regional location for Vertex AI models (e.g. us-east5 for newer Claude models)."
+  type        = string
+  default     = "us-east5"
+}
+

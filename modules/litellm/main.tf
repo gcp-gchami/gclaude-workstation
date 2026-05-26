@@ -13,42 +13,42 @@ model_list:
     litellm_params:
       model: vertex_ai/claude-3-5-sonnet@20240620
       vertex_ai_project: "os.environ/ANTHROPIC_VERTEX_PROJECT_ID"
-      vertex_ai_location: "os.environ/CLOUD_ML_REGION"
+      vertex_ai_location: "os.environ/VERTEX_AI_LOCATION"
   - model_name: claude-3-5-haiku
     litellm_params:
       model: vertex_ai/claude-3-5-haiku@20241022
       vertex_ai_project: "os.environ/ANTHROPIC_VERTEX_PROJECT_ID"
-      vertex_ai_location: "os.environ/CLOUD_ML_REGION"
+      vertex_ai_location: "os.environ/VERTEX_AI_LOCATION"
   - model_name: claude-3-opus
     litellm_params:
       model: vertex_ai/claude-3-opus@20240229
       vertex_ai_project: "os.environ/ANTHROPIC_VERTEX_PROJECT_ID"
-      vertex_ai_location: "os.environ/CLOUD_ML_REGION"
+      vertex_ai_location: "os.environ/VERTEX_AI_LOCATION"
   - model_name: claude-opus-4-6
     litellm_params:
       model: vertex_ai/claude-opus-4-6
       vertex_ai_project: "os.environ/ANTHROPIC_VERTEX_PROJECT_ID"
-      vertex_ai_location: "os.environ/CLOUD_ML_REGION"
+      vertex_ai_location: "os.environ/VERTEX_AI_LOCATION"
   - model_name: claude-opus-4-7
     litellm_params:
       model: vertex_ai/claude-opus-4-7
       vertex_ai_project: "os.environ/ANTHROPIC_VERTEX_PROJECT_ID"
-      vertex_ai_location: "os.environ/CLOUD_ML_REGION"
+      vertex_ai_location: "os.environ/VERTEX_AI_LOCATION"
   - model_name: claude-sonnet-4-6
     litellm_params:
       model: vertex_ai/claude-sonnet-4-6
       vertex_ai_project: "os.environ/ANTHROPIC_VERTEX_PROJECT_ID"
-      vertex_ai_location: "os.environ/CLOUD_ML_REGION"
+      vertex_ai_location: "os.environ/VERTEX_AI_LOCATION"
   - model_name: gemini-1.5-pro
     litellm_params:
       model: vertex_ai/gemini-1.5-pro
       vertex_ai_project: "os.environ/ANTHROPIC_VERTEX_PROJECT_ID"
-      vertex_ai_location: "os.environ/CLOUD_ML_REGION"
+      vertex_ai_location: "os.environ/VERTEX_AI_LOCATION"
   - model_name: gemini-1.5-flash
     litellm_params:
       model: vertex_ai/gemini-1.5-flash
       vertex_ai_project: "os.environ/ANTHROPIC_VERTEX_PROJECT_ID"
-      vertex_ai_location: "os.environ/CLOUD_ML_REGION"
+      vertex_ai_location: "os.environ/VERTEX_AI_LOCATION"
 EOF
 }
 
@@ -145,6 +145,11 @@ resource "google_cloud_run_v2_service" "litellm" {
       env {
         name  = "CLOUD_ML_REGION"
         value = var.region
+      }
+
+      env {
+        name  = "VERTEX_AI_LOCATION"
+        value = var.vertex_ai_location
       }
 
       # Retrieve Master Key at runtime
