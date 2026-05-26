@@ -49,8 +49,9 @@ resource "google_workstations_workstation_config" "config" {
       ANTHROPIC_VERTEX_PROJECT_ID = var.project_id
       CLOUD_ML_REGION             = var.region
       CLAUDE_CODE_USE_VERTEX      = "1"
-      LITELLM_BASE_URL            = var.litellm_url
-      LITELLM_MASTER_KEY          = var.litellm_master_key
+      LITELLM_BASE_URL            = "http://localhost:4000"
+      LITELLM_UPSTREAM_URL        = var.litellm_url
+      LITELLM_SERVICE_NAME        = var.litellm_service_name
     }
   }
 
@@ -88,4 +89,43 @@ resource "google_workstations_workstation_iam_member" "workstation_user" {
   
   role   = "roles/workstations.user"
   member = "user:${each.value}"
+}
+
+# Create Secret Manager secrets for user-specific LiteLLM virtual keys
+resource "google_secret_manager_secret" "user_key" {
+  for_each = var.workstation_users
+
+  project   = var.project_id
+  secret_id = "litellm-user-key-${each.key}"
+
+  replication {
+    auto {}
+  }
+}
+
+# Grant workstations service account permissions to write (add versions) and read (access versions) user keys
+resource "google_secret_manager_secret_iam_member" "user_key_version_manager" {
+  for_each = var.workstation_users
+
+  project   = var.project_id
+  secret_id = google_secret_manager_secret.user_key[each.key].secret_id
+  role      = "roles/secretmanager.secretVersionManager"
+  member    = "serviceAccount:${var.service_account_email}"
+}
+
+resource "google_secret_manager_secret_iam_member" "user_key_accessor" {
+  for_each = var.workstation_users
+
+  project   = var.project_id
+  secret_id = google_secret_manager_secret.user_key[each.key].secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${var.service_account_email}"
+}
+
+# Grant workstations service account read permission on the LiteLLM master key secret to allow dynamic key generation
+resource "google_secret_manager_secret_iam_member" "master_key_accessor_workstation" {
+  project   = var.project_id
+  secret_id = var.litellm_master_key_secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${var.service_account_email}"
 }

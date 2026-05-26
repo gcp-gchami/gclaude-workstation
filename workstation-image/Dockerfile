@@ -3,6 +3,9 @@ FROM us-central1-docker.pkg.dev/cloud-workstations-images/predefined/code-oss:la
 # Run as root to install global packages
 USER root
 
+# Install the cloud-run-proxy helper component for gcloud
+RUN apt-get update && apt-get install -y google-cloud-cli-cloud-run-proxy && rm -rf /var/lib/apt/lists/*
+
 # Install Claude Code via NPM
 RUN npm install -g @anthropic-ai/claude-code
 
@@ -18,5 +21,9 @@ RUN echo 'if [ -f /etc/profile.d/command_logging.sh ]; then . /etc/profile.d/com
 # Copy workstation-startup.d script and make it executable
 COPY 010_command_logging.sh /etc/workstation-startup.d/010_command_logging.sh
 RUN chmod +x /etc/workstation-startup.d/010_command_logging.sh
+
+COPY 020_litellm_proxy.sh /etc/workstation-startup.d/020_litellm_proxy.sh
+RUN chmod +x /etc/workstation-startup.d/020_litellm_proxy.sh
+
 # Switch back to the standard user if necessary, or let workstations handle it
 # Workstations typically run the container as user `user` with uid 1000

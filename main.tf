@@ -67,6 +67,12 @@ module "litellm" {
   subnetwork_id             = module.network.subnetwork_id
   private_vpc_connection_id = module.network.private_vpc_connection_id
 
+  # Strict IAM invoker list (users + workstation service account)
+  authorized_invokers       = concat(
+    [for user_email in values(var.workstation_users) : "user:${user_email}"],
+    ["serviceAccount:${module.project.workstations_service_account_email}"]
+  )
+
   depends_on = [module.project]
 }
 
@@ -82,8 +88,10 @@ module "workstations" {
   image_url             = "${module.project.artifact_registry_url}/custom-workstation:latest"
   service_account_email = module.project.workstations_service_account_email
 
-  litellm_url        = module.litellm.litellm_url
-  litellm_master_key = module.litellm.master_key
+  litellm_url                  = module.litellm.litellm_url
+  litellm_master_key           = module.litellm.master_key
+  litellm_master_key_secret_id = module.litellm.master_key_secret_id
+  litellm_service_name         = module.litellm.service_name
 
   idle_timeout    = var.workstation_idle_timeout
   running_timeout = var.workstation_running_timeout

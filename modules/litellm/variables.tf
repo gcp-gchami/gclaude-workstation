@@ -35,4 +35,8 @@ variable "private_vpc_connection_id" {
   type        = string
 }
 
-
+variable "authorized_invokers" {
+  description = "The list of GCP members (users or service accounts) authorized to invoke the private Cloud Run service."
+  type        = list(string)
+  default     = []
+}

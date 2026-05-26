@@ -82,3 +82,14 @@ variable "running_timeout" {
   default     = "86400s"
 }
 
+variable "litellm_master_key_secret_id" {
+  description = "The Secret Manager secret ID for the LiteLLM master API key."
+  type        = string
+}
+
+variable "litellm_service_name" {
+  description = "The name of the LiteLLM Cloud Run service."
+  type        = string
+}
+
+

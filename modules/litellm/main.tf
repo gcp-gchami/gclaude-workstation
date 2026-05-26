@@ -293,11 +293,13 @@ resource "google_cloud_run_v2_service" "litellm" {
   ]
 }
 
-# Grant public invoker permissions to secure endpoint at application-level with Master API Key
-resource "google_cloud_run_v2_service_iam_member" "public_invoker" {
+# Grant invoker permissions to authorized users and workstation service account
+resource "google_cloud_run_v2_service_iam_member" "invokers" {
+  for_each = toset(var.authorized_invokers)
+
   project  = var.project_id
   location = var.region
   name     = google_cloud_run_v2_service.litellm.name
   role     = "roles/run.invoker"
-  member   = "allUsers"
+  member   = each.value
 }
