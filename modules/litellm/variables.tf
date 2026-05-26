@@ -20,3 +20,19 @@ variable "vertex_ai_location" {
   default     = "us-east5"
 }
 
+variable "network_id" {
+  description = "The ID of the custom VPC network."
+  type        = string
+}
+
+variable "subnetwork_id" {
+  description = "The ID of the custom subnetwork."
+  type        = string
+}
+
+variable "private_vpc_connection_id" {
+  description = "The connection ID of the VPC Service Networking Peering."
+  type        = string
+}
+
+

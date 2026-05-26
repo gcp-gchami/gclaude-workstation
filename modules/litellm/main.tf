@@ -111,6 +111,74 @@ resource "google_secret_manager_secret_iam_member" "master_key_accessor" {
   member    = "serviceAccount:${google_service_account.litellm_sa.email}"
 }
 
+resource "random_password" "db_password" {
+  length  = 16
+  special = false
+}
+
+resource "google_sql_database_instance" "postgres" {
+  project             = var.project_id
+  name                = "litellm-postgres"
+  database_version    = "POSTGRES_15"
+  region              = var.region
+  deletion_protection = false
+
+  settings {
+    tier = "db-f1-micro"
+
+    ip_configuration {
+      ipv4_enabled    = false
+      private_network = var.network_id
+    }
+  }
+
+  # Ensure Database is only created after VPC Peering Connection is fully established!
+  depends_on = [var.private_vpc_connection_id]
+}
+
+resource "google_sql_database" "litellm_db" {
+  project  = var.project_id
+  name     = "litellm"
+  instance = google_sql_database_instance.postgres.name
+}
+
+resource "google_sql_user" "litellm_user" {
+  project  = var.project_id
+  name     = "litellm"
+  instance = google_sql_database_instance.postgres.name
+  password = random_password.db_password.result
+}
+
+# Secret Manager secret for the Database URL connection string
+resource "google_secret_manager_secret" "litellm_db_url" {
+  project   = var.project_id
+  secret_id = "litellm-db-url"
+
+  replication {
+    auto {}
+  }
+}
+
+resource "google_secret_manager_secret_version" "litellm_db_url_version" {
+  secret      = google_secret_manager_secret.litellm_db_url.id
+  secret_data = "postgresql://${google_sql_user.litellm_user.name}:${random_password.db_password.result}@localhost/${google_sql_database.litellm_db.name}?host=/cloudsql/${google_sql_database_instance.postgres.connection_name}"
+}
+
+# Authorize service account to read the database URL secret
+resource "google_secret_manager_secret_iam_member" "db_url_accessor" {
+  project   = var.project_id
+  secret_id = google_secret_manager_secret.litellm_db_url.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.litellm_sa.email}"
+}
+
+# Grant Cloud SQL Client role to allow the service account to connect to private SQL instance
+resource "google_project_iam_member" "litellm_cloudsql_client" {
+  project = var.project_id
+  role    = "roles/cloudsql.client"
+  member  = "serviceAccount:${google_service_account.litellm_sa.email}"
+}
+
 # Deploy LiteLLM to Cloud Run
 resource "google_cloud_run_v2_service" "litellm" {
   project  = var.project_id
@@ -120,6 +188,15 @@ resource "google_cloud_run_v2_service" "litellm" {
 
   template {
     service_account = google_service_account.litellm_sa.email
+
+    # Direct VPC Egress routing all traffic through our custom subnet
+    vpc_access {
+      network_interfaces {
+        network    = var.network_id
+        subnetwork = var.subnetwork_id
+      }
+      egress = "ALL_TRAFFIC"
+    }
 
     containers {
       image = "docker.io/litellm/litellm:main-stable"
@@ -163,9 +240,25 @@ resource "google_cloud_run_v2_service" "litellm" {
         }
       }
 
+      # Retrieve Database URL at runtime
+      env {
+        name = "DATABASE_URL"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.litellm_db_url.secret_id
+            version = "latest"
+          }
+        }
+      }
+
       volume_mounts {
         name       = "config-volume"
         mount_path = "/app/config"
+      }
+
+      volume_mounts {
+        name       = "cloudsql"
+        mount_path = "/cloudsql"
       }
     }
 
@@ -179,13 +272,23 @@ resource "google_cloud_run_v2_service" "litellm" {
         }
       }
     }
+
+    volumes {
+      name = "cloudsql"
+      cloud_sql_instance {
+        instances = [google_sql_database_instance.postgres.connection_name]
+      }
+    }
   }
 
   depends_on = [
     google_secret_manager_secret_version.litellm_config_version,
     google_secret_manager_secret_version.litellm_master_key_version,
+    google_secret_manager_secret_version.litellm_db_url_version,
     google_secret_manager_secret_iam_member.config_accessor,
     google_secret_manager_secret_iam_member.master_key_accessor,
+    google_secret_manager_secret_iam_member.db_url_accessor,
+    google_project_iam_member.litellm_cloudsql_client,
     google_project_iam_member.litellm_vertex_user
   ]
 }

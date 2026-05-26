@@ -17,7 +17,9 @@ locals {
     "cloudbuild.googleapis.com",
     "aiplatform.googleapis.com",
     "run.googleapis.com",
-    "secretmanager.googleapis.com"
+    "secretmanager.googleapis.com",
+    "sqladmin.googleapis.com",
+    "servicenetworking.googleapis.com"
   ]
 }
 

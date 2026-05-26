@@ -59,10 +59,13 @@ resource "null_resource" "build_custom_image" {
 module "litellm" {
   source = "./modules/litellm"
 
-  project_id         = module.project.project_id
-  region             = var.region
-  vertex_ai_location = var.vertex_ai_location
-  master_key         = var.litellm_master_key
+  project_id                = module.project.project_id
+  region                    = var.region
+  vertex_ai_location         = var.vertex_ai_location
+  master_key                = var.litellm_master_key
+  network_id                = module.network.network_id
+  subnetwork_id             = module.network.subnetwork_id
+  private_vpc_connection_id = module.network.private_vpc_connection_id
 
   depends_on = [module.project]
 }
