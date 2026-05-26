@@ -25,6 +25,9 @@ resource "google_workstations_workstation_config" "config" {
   
   enable_audit_agent = true
 
+  idle_timeout    = var.idle_timeout
+  running_timeout = var.running_timeout
+
   host {
     gce_instance {
       machine_type                = var.machine_type

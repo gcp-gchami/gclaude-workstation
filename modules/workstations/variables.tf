@@ -70,3 +70,15 @@ variable "litellm_master_key" {
   sensitive   = true
 }
 
+variable "idle_timeout" {
+  description = "How long a workstation can remain idle before being automatically stopped (e.g. 7200s for 2 hours)."
+  type        = string
+  default     = "7200s"
+}
+
+variable "running_timeout" {
+  description = "The maximum duration a workstation can run before being automatically stopped (e.g. 86400s for 24 hours)."
+  type        = string
+  default     = "86400s"
+}
+

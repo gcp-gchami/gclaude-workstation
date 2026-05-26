@@ -81,5 +81,8 @@ module "workstations" {
   litellm_url        = module.litellm.litellm_url
   litellm_master_key = module.litellm.master_key
 
+  idle_timeout    = var.workstation_idle_timeout
+  running_timeout = var.workstation_running_timeout
+
   depends_on = [module.project, null_resource.build_custom_image, module.litellm]
 }

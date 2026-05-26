@@ -45,3 +45,15 @@ variable "litellm_master_key" {
   sensitive   = true
   default     = "sk-litellm-master-key-1234" # A sensible secure default key
 }
+
+variable "workstation_idle_timeout" {
+  description = "How long a workstation can remain idle before being automatically stopped (e.g. 7200s for 2 hours)."
+  type        = string
+  default     = "7200s"
+}
+
+variable "workstation_running_timeout" {
+  description = "The maximum duration a workstation can run before being automatically stopped (e.g. 86400s for 24 hours)."
+  type        = string
+  default     = "86400s"
+}
