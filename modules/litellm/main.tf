@@ -24,6 +24,21 @@ model_list:
       model: vertex_ai/claude-3-opus@20240229
       vertex_ai_project: "os.environ/ANTHROPIC_VERTEX_PROJECT_ID"
       vertex_ai_location: "os.environ/CLOUD_ML_REGION"
+  - model_name: claude-opus-4-6
+    litellm_params:
+      model: vertex_ai/claude-opus-4-6
+      vertex_ai_project: "os.environ/ANTHROPIC_VERTEX_PROJECT_ID"
+      vertex_ai_location: "os.environ/CLOUD_ML_REGION"
+  - model_name: claude-opus-4-7
+    litellm_params:
+      model: vertex_ai/claude-opus-4-7
+      vertex_ai_project: "os.environ/ANTHROPIC_VERTEX_PROJECT_ID"
+      vertex_ai_location: "os.environ/CLOUD_ML_REGION"
+  - model_name: claude-sonnet-4-6
+    litellm_params:
+      model: vertex_ai/claude-sonnet-4-6
+      vertex_ai_project: "os.environ/ANTHROPIC_VERTEX_PROJECT_ID"
+      vertex_ai_location: "os.environ/CLOUD_ML_REGION"
   - model_name: gemini-1.5-pro
     litellm_params:
       model: vertex_ai/gemini-1.5-pro
